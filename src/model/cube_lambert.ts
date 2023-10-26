@@ -1,24 +1,22 @@
 import * as THREE from "three";
 import gui, { guiPosition, guiColor } from "../utils/gui";
+import { InitProps } from "./type";
 import stats from "../utils/stats";
 
 // 创建几何体
 const geometry = new THREE.BoxGeometry(30, 30, 30);
 
 // 漫反射材质
-const lamberMaterial = new THREE.MeshLambertMaterial({
+const material = new THREE.MeshLambertMaterial({
   // 显示三角形结构
   // wireframe: true
 });
-const mesh = new THREE.Mesh(geometry, lamberMaterial);
+const mesh = new THREE.Mesh(geometry, material);
 mesh.position.set(50, 0, 0);
 mesh.castShadow = true;
 
-const init = (
-  renderer: THREE.Renderer,
-  scene: THREE.Scene,
-  camera: THREE.Camera
-) => {
+const init = (params: InitProps) => {
+  const { renderer, scene, camera } = params;
     scene.add(mesh)
   function render() {
     renderer.render(scene, camera); //执行渲染操作

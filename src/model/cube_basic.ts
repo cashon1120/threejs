@@ -1,5 +1,6 @@
 import * as THREE from "three";
-import gui, {guiPosition, guiColor} from "../utils/gui";
+import gui, { guiPosition, guiColor } from "../utils/gui";
+import { InitProps } from "./type";
 import stats from "../utils/stats";
 
 // 创建几何体
@@ -14,13 +15,9 @@ const material = new THREE.MeshBasicMaterial({
 const mesh = new THREE.Mesh(geometry, material);
 mesh.position.set(0, 0, 0);
 
-
-const init = (
-  renderer: THREE.Renderer,
-  scene: THREE.Scene,
-  camera: THREE.Camera
-) => {
-    scene.add(mesh)
+const init = (params: InitProps) => {
+  const { renderer, scene, camera } = params;
+  scene.add(mesh);
   function render() {
     renderer.render(scene, camera); //执行渲染操作
     stats.update();
@@ -31,9 +28,9 @@ const init = (
   }
   render();
 };
-const folder = gui.addFolder('Basic立方体')
-folder.close()
-guiPosition({mesh: mesh, folder})
-guiColor({mesh: mesh, folder})
+const folder = gui.addFolder("Basic立方体");
+folder.close();
+guiPosition({ mesh: mesh, folder });
+guiColor({ mesh: mesh, folder });
 
 export default init;

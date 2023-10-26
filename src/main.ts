@@ -11,6 +11,7 @@ import createHelper from "./utils/helper";
 // 导入模型
 import initCubeBasic from "./model/cube_basic"
 import initCubeLambert from "./model/cube_lambert"
+import initPlane from "./model/plane"
 
 // 创建辅助坐标和平面
 createHelper(scene)
@@ -24,10 +25,11 @@ createGui(renderer, scene, camera)
 // 创建相机控件
 initOrbitContros(renderer, scene, camera)
 
-initCubeLambert(renderer, scene, camera)
+initCubeLambert({renderer, scene, camera})
 
-initCubeBasic(renderer, scene, camera)
+initCubeBasic({renderer, scene, camera})
 
+initPlane({renderer, scene, camera})
 
 // const num = 100; //控制长方体模型数量
 // for (let i = 0; i < num; i++) {
