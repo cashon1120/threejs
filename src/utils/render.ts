@@ -7,6 +7,7 @@ const renderer = new THREE.WebGLRenderer({
   antialias: true,
 });
 renderer.setSize(width, height);
+renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
 export default renderer
