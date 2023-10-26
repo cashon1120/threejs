@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import gui, {guiPosition, guiColor, guiBoolean} from "../utils/gui";
+import gui, {guiPosition, guiBoolean} from "../utils/gui";
 
 // 创建点光源
 const pointLight = new THREE.PointLight(0xffffff, 1, 0, 0);
@@ -33,7 +33,7 @@ guiBoolean({
   },
 });
 
-// 添加点光源
+// 添加点光源gui
 folder.add(pointLight, "intensity", 0, 2).name("点光源" )
 guiPosition({mesh: pointLight, name: '点光源', min: -300, max: 300, folder})
 guiBoolean({
