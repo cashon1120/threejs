@@ -17,6 +17,7 @@ import initGroup from "./model/group"
 import initObj from "./model/objLoader"
 import initPbr from "./model/pbr"
 import initPipe from "./model/pipe";
+import sprite from "./model/sprite"
 
 // 创建辅助坐标和平面
 createHelper(scene)
@@ -40,12 +41,12 @@ initGroup({renderer, scene, camera})
 
 initCircle({renderer, scene, camera})
 
-initObj({renderer, scene, camera})
+// initObj({renderer, scene, camera})
 
 initPbr({renderer, scene, camera})
 
 initPipe({renderer, scene, camera})
-
+sprite({renderer, scene, camera})
 // const num = 100; //控制长方体模型数量
 // for (let i = 0; i < num; i++) {
 //   const geometry = new THREE.BoxGeometry(5, 5, 5);
