@@ -13,6 +13,7 @@ directionLight.position.set(-300, -200, 200);
 // 创建聚光灯
 const spotLight = new THREE.SpotLight(0xffffff, 1);
 spotLight.position.set(400, 200, 150);
+spotLight.castShadow = true;
 
 // 光源辅助观察
 const pointLightHelper = new THREE.PointLightHelper(pointLight, 3);

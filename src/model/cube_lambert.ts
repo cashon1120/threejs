@@ -15,18 +15,34 @@ const mesh = new THREE.Mesh(geometry, material);
 mesh.position.set(50, 0, 0);
 mesh.castShadow = true;
 
+const axis = new THREE.Vector3(1, 1, 1);
+mesh.rotateOnAxis(axis, Math.PI / 3)
+
+
 const init = (params: InitProps) => {
   const { renderer, scene, camera } = params;
-    scene.add(mesh)
+  scene.add(mesh);
+
+
   function render() {
     renderer.render(scene, camera); //执行渲染操作
     stats.update();
-    mesh.rotateX(0.01); //每次绕y轴旋转0.01弧度
-    mesh.rotateY(0.01); //每次绕y轴旋转0.01弧度
-    mesh.rotateZ(0.01); //每次绕y轴旋转0.01弧度
+    // mesh.rotateX(0.01); //每次绕y轴旋转0.01弧度
+    // mesh.rotateY(0.01); //每次绕y轴旋转0.01弧度
+    // mesh.rotateZ(0.01); //每次绕y轴旋转0.01弧度
+
+    // mesh.rotation.y += 0.01
+
+
+    // mesh.rotateY(0.01); //每次绕y轴旋转0.01弧度
+
+
     requestAnimationFrame(render); //请求再次执行渲染函数render，渲染下一帧
   }
-  render();
+  // render();
+
+  // 返回模型，可在外层拿到引用
+  return mesh;
 };
 
 const folder = gui.addFolder("漫反射立方体");

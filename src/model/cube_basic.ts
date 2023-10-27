@@ -14,7 +14,6 @@ const material = new THREE.MeshBasicMaterial({
 });
 const mesh = new THREE.Mesh(geometry, material);
 mesh.position.set(0, 0, 0);
-
 const init = (params: InitProps) => {
   const { renderer, scene, camera } = params;
   scene.add(mesh);
@@ -27,6 +26,8 @@ const init = (params: InitProps) => {
     requestAnimationFrame(render); //请求再次执行渲染函数render，渲染下一帧
   }
   render();
+  // 返回模型，可在外层拿到引用
+  return mesh
 };
 const folder = gui.addFolder("Basic立方体");
 folder.close();

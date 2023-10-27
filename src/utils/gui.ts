@@ -17,6 +17,7 @@ interface ColorProps {
   folder: GUI;
   name?: string;
   defaultValue?: number | string;
+  onChange?: (value: number | string) => void;
 }
 
 interface BooleanProps {
@@ -62,7 +63,7 @@ export const guiPosition = (params: PositionProps) => {
 
 // 颜色控制
 export const guiColor = (params: ColorProps) => {
-  const { mesh, folder, name = "颜色", defaultValue = 0xffffff } = params;
+  const { mesh, folder, name = "颜色", defaultValue = 0xffffff, onChange } = params;
   const obj = {
     color: defaultValue,
   };
@@ -70,6 +71,10 @@ export const guiColor = (params: ColorProps) => {
     .addColor(obj, "color")
     .name(name)
     .onChange((value: number | string) => {
+      if(onChange){
+        onChange(value)
+        return
+      }
       (mesh.material as any).color.set(value);
     });
 };
