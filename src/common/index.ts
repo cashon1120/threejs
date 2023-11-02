@@ -5,6 +5,7 @@ import camera from "./camera";
 import renderer from "./render";
 import { createGui } from "./gui";
 import createHelper from "./helper";
+import stats from "./stats";
 
 // 创建辅助坐标和平面
 createHelper(scene)
@@ -23,12 +24,15 @@ window.addEventListener("resize", () => {
   renderer.render(scene, camera);
 });
 
+renderer.render(scene, camera);
+const controls = initOrbitContros(renderer, scene, camera);
 export {
   scene,
   createLight,
-  initOrbitContros,
+  controls,
   camera,
   renderer,
   createGui,
   createHelper,
+  stats
 };

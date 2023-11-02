@@ -1,19 +1,13 @@
 import "./style.css";
+import init360House from './360'
+import initSprite from './model/sprite'
+import initCity from './city'
 
-import {
-  scene,
-  initOrbitContros,
-  camera,
-  renderer,
-} from './common'
-import init from './city/index'
+// VR看房
+// init360House()
 
-// 创建相机控件
-const controls = initOrbitContros(renderer, scene, camera)
-// controls.minDistance = 1;
-// controls.maxDistance = 1;
-// 禁止右键盘平移
-controls.enablePan = false
-init({renderer, scene, camera, controls})
+// 城市
+initCity()
 
-renderer.render(scene, camera);
+// initSprite()
+
