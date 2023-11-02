@@ -13,7 +13,7 @@ const material = new THREE.MeshBasicMaterial({
   opacity: 0.7,
 });
 const mesh = new THREE.Mesh(geometry, material);
-mesh.position.set(0, 0, 0);
+mesh.position.set(-200, 0, 0);
 const init = (params: InitProps) => {
   const { renderer, scene, camera } = params;
   scene.add(mesh);
