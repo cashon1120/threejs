@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import stats from "../utils/stats";
+import stats from "./stats";
 
 // 相机控件
 const initOrbitContros = (renderer: THREE.Renderer, scene: THREE.Scene, camera: THREE.Camera, ) => {

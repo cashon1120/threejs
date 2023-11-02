@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import gui, {guiPosition, guiBoolean} from "../utils/gui";
+import gui, {guiPosition, guiBoolean} from "./gui";
 
 // 创建点光源
 const pointLight = new THREE.PointLight(0xffffff, 1, 0, 0);
