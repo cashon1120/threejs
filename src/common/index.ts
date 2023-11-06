@@ -5,6 +5,7 @@ import camera from "./camera";
 import renderer from "./render";
 import { createGui } from "./gui";
 import createHelper from "./helper";
+import gui, {guiPosition, guiColor, guiBoolean} from "./gui";
 import stats from "./stats";
 
 // 创建辅助坐标和平面
@@ -34,5 +35,9 @@ export {
   renderer,
   createGui,
   createHelper,
-  stats
+  stats,
+  gui,
+  guiPosition,
+  guiColor,
+  guiBoolean
 };
