@@ -19,7 +19,7 @@ spotLight.castShadow = true;
 // const pointLightHelper = new THREE.PointLightHelper(pointLight, 3);
 
 //环境光:没有特定方向，整体改变场景的光照明暗，也不会产生投影
-const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+const ambient = new THREE.AmbientLight(0xffffff, 1);
 
 // 设置gui
 const folder = gui.addFolder('光源')

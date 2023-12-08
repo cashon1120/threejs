@@ -1,10 +1,9 @@
 import * as THREE from "three";
-import { DragControls } from "three/addons/controls/DragControls.js";
 import { TransformControls } from "three/addons/controls/TransformControls.js";
-import { renderer, camera, controls, scene } from "../common";
+import { renderer, camera, controls } from "../common";
 import { getMousePosition } from "../utils/index";
 
-const createRaycaster = (houses: THREE.Mesh[]) => {
+const createRaycaster = (houses: THREE.Mesh[] | THREE.Group[]) => {
   renderer.domElement.addEventListener("mouseup", () => {
     controls.enableRotate = true;
   });
@@ -16,29 +15,27 @@ const createRaycaster = (houses: THREE.Mesh[]) => {
   });
   const mesh = new THREE.Mesh(geometry, material);
   mesh.position.set(0, 40, 0);
-  scene.add(mesh);
+  // scene.add(mesh);
 
   const transformControls = new TransformControls(camera, renderer.domElement);
-  transformControls.addEventListener('mousedown', () => {
-    console.log(1)
+  // scene.add(transformControls);
+  // 注意mouseDown、mouseUp的大小写问题，和原生的不一样
+  transformControls.addEventListener("mouseDown", () => {
     controls.enableRotate = false;
-    controls.enableZoom = false
-  })
-  transformControls.addEventListener('mouseup', () => {
-    console.log(2)
+    controls.enableZoom = false;
+  });
+  transformControls.addEventListener("mouseUp", () => {
     controls.enableRotate = true;
-    controls.enableZoom = true
-  })
-    // transformControls.showX = false
-    // transformControls.showY = false
-    // transformControls.showZ = false
-  transformControls.size = 1;
+    controls.enableZoom = true;
+  });
+  // transformControls.showX = false;
+  // transformControls.showY = false;
+  // transformControls.showZ = false;
+  // transformControls.size = 1;
   transformControls.attach(mesh);
   transformControls.setMode("rotate");
-  scene.add(transformControls);
 
   renderer.domElement.addEventListener("mousedown", (event: MouseEvent) => {
- 
     const position = getMousePosition(event, renderer);
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(new THREE.Vector2(position.x, position.y), camera);
@@ -46,8 +43,6 @@ const createRaycaster = (houses: THREE.Mesh[]) => {
     if (intersects.length > 0) {
       controls.enableRotate = false;
       console.log(intersects.map((item: any) => item.object.name));
-      const object = intersects[0];
-      //   new DragControls(intersects, camera, renderer.domElement)
     }
   });
 };

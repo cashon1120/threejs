@@ -4,16 +4,21 @@ import createHouse from "./house";
 import createSpotLight from "./spotLight";
 import createPointLight from "./pointLight";
 import createRaycaster from "./raycaster";
+import createSky from "./sky";
+import createWall from "./wall";
+import createTrajectory from "./trajectory";
+import createWater from "./water";
+import createRoad from "./road";
 
 const init = () => {
   // 缩放距离范围
-  controls.minDistance = 100;
+  controls.minDistance = 10;
   controls.maxDistance = 2000;
   // 禁止右键盘平移
   controls.enablePan = false;
   // 上下角度
-  controls.minPolarAngle = 0.5;
-  controls.maxPolarAngle = 1.45;
+  // controls.minPolarAngle = 0.5;
+  // controls.maxPolarAngle = 1.45;
 
   // 禁止旋转
   // controls.enableRotate = false;
@@ -23,6 +28,8 @@ const init = () => {
   camera.position.set(200, 100, 200);
   controls.target.copy(new THREE.Vector3(0, 0, 0));
   controls.update();
+
+  createSky();
 
   const createSpere = () => {
     // 这里是一个球体
@@ -37,12 +44,12 @@ const init = () => {
     mesh.position.set(0, 0, 0);
     mesh.name = "球体";
     scene.add(mesh);
-    return mesh
+    return mesh;
   };
 
   const createPlane = () => {
     // 地面
-    const planeGeometry = new THREE.CircleGeometry(500, 32);
+    const planeGeometry = new THREE.CircleGeometry(150, 32);
     const planeMaterial = new THREE.MeshLambertMaterial({
       color: "#110463",
       side: THREE.DoubleSide,
@@ -90,8 +97,12 @@ const init = () => {
   createPointLight();
   createPlane();
   createStar();
-  const houses: THREE.Mesh[] = createHouse();
+  const houses: THREE.Group[] = createHouse();
   createRaycaster([...houses]);
+  createWall();
+  createTrajectory();
+  createWater();
+  createRoad()
 };
 
 export default init;

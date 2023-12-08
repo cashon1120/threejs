@@ -28,5 +28,5 @@ export default (scene: THREE.Scene) => {
   // 添加坐标辅助线
   scene.add(axesHelper);
   // 添加网格辅助线
-  scene.add(gridHelper);
+  // scene.add(gridHelper);
 };

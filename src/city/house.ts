@@ -3,6 +3,7 @@ import {
   CSS2DObject,
   CSS2DRenderer,
 } from "three/addons/renderers/CSS2DRenderer.js";
+import TWEEN from "@tweenjs/tween.js";
 
 import { scene, camera, renderer, controls } from "../common";
 import { random } from "../utils";
@@ -10,12 +11,13 @@ import { random } from "../utils";
 const css2dRenderer = new CSS2DRenderer();
 
 const createHouse = () => {
-  const houses: THREE.Mesh[] = [];
+  const houses: THREE.Group[] = [];
+  const animations: any = [];
 
-  for (let i = 0; i < 20; i++) {
-    const length = random(10, 20);
-    const height = random(10, 30);
-    const width = random(10, 20);
+  for (let i = 0; i < 10; i++) {
+    const length = random(5, 10);
+    const height = random(5, 20);
+    const width = random(5, 10);
     const geometry = new THREE.BoxGeometry(length, height, width);
     const material = new THREE.MeshLambertMaterial({
       color: "#1058d3",
@@ -26,9 +28,22 @@ const createHouse = () => {
     mesh.name = name;
     const x = random(-100, 100);
     const z = random(-100, 100);
-    mesh.position.set(x, height / 2, z);
-    scene.add(mesh);
-    houses.push(mesh);
+    const group = new THREE.Group();
+    const newObj = new THREE.Object3D();
+    newObj.position.set(0, -(height / 2), 0);
+    group.position.set(x, 0, z);
+    mesh.position.set(0, height / 2, 0);
+    group.add(mesh);
+    group.add(newObj);
+    scene.add(group);
+    houses.push(group);
+    let animation: any;
+
+    animation = new TWEEN.Tween(group.scale)
+      .to({ x: 1, y: 0.5, z: 1 }, 2000)
+      .start()
+      .easing(TWEEN.Easing.Exponential.InOut);
+    animations.push(animation);
     const div = document.createElement("div");
     div.id = "tag";
     div.style.color = "#fff";
@@ -39,6 +54,17 @@ const createHouse = () => {
     tag.position.set(x, height + 1, z);
     scene.add(tag);
   }
+
+  const animation = () => {
+    animations.forEach((item: any) => {
+      item.update();
+      // new TWEEN.Tween(item.position).to({ x: 0, y: 0, z: 0 }, 2000).start();
+      // new TWEEN.Tween(item.scale).to({ y: 0.5 }, 2000).start();
+    });
+    renderer.render(scene, camera);
+    requestAnimationFrame(animation);
+  };
+  // animation();
   renderer.render(scene, camera);
 
   const { width, height } = renderer.domElement;
