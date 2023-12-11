@@ -44,8 +44,16 @@ class Track extends Bar {
     this.group = new THREE.Group();
     const mesh2 = new THREE.Mesh(geometry2, material2); 
 
+    const geometry3 = new THREE.BoxGeometry(width, height + 1, depth - 2);
+    const material3 = new THREE.MeshPhongMaterial({
+      color: '#000000',
+    });
+    this.group = new THREE.Group();
+    const mesh3 = new THREE.Mesh(geometry2, material2); 
+
     this.group.add(mesh);
     this.group.add(mesh2);
+    this.group.add(mesh3);
     this.group.position.set(x, y, z);
     this.bar = new Bar({
       width,
