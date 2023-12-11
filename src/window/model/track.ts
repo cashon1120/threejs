@@ -30,30 +30,29 @@ class Track extends Bar {
       y = 0,
       z = 0,
     } = params;
+    this.group = new THREE.Group();
+    this.width = width;
     const geometry = new THREE.BoxGeometry(width, height, depth);
-    const material = new THREE.MeshPhongMaterial({
+    const material = new THREE.MeshPhysicalMaterial({
       color,
+      //渲染为线条
+      wireframe: false,
+      metalness: 0.5,
+      roughness: 0.5,
     });
-    this.group = new THREE.Group();
-    const mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, material)
 
-    const geometry2 = new THREE.BoxGeometry(width, height + 1, depth - 2);
-    const material2 = new THREE.MeshPhongMaterial({
-      color: '#ffe500',
-    });
-    this.group = new THREE.Group();
-    const mesh2 = new THREE.Mesh(geometry2, material2); 
-
-    const geometry3 = new THREE.BoxGeometry(width, height + 1, depth - 2);
-    const material3 = new THREE.MeshPhongMaterial({
-      color: '#000000',
-    });
-    this.group = new THREE.Group();
-    const mesh3 = new THREE.Mesh(geometry2, material2); 
-
+    // const geometry2 = new THREE.BoxGeometry(width - 1, height, depth - 2);
+    // const material2 = new THREE.MeshPhysicalMaterial({
+    //   color: "#ffe500",
+    //   metalness: 0.5,
+    //   roughness: 0.5,
+    // });
+    // const mesh2 = new THREE.Mesh(geometry2, material2);
+    // mesh2.position.set(0, 1, 0);
     this.group.add(mesh);
-    this.group.add(mesh2);
-    this.group.add(mesh3);
+    // this.group.add(mesh2);
+    // this.createTrack();
     this.group.position.set(x, y, z);
     this.bar = new Bar({
       width,
@@ -61,12 +60,41 @@ class Track extends Bar {
       depth,
       meshGroup: this.group,
       align: "bottom",
+    }).init();
+
+  }
+
+
+  private createTrack = () => {
+    const pointsArr = [
+      new THREE.Vector2(0, 0),
+      new THREE.Vector2(4, 0),
+      new THREE.Vector2(4, 4),
+      new THREE.Vector2(3, 4),
+      new THREE.Vector2(3, 3),
+      new THREE.Vector2(1, 3),
+      new THREE.Vector2(1, 4),
+      new THREE.Vector2(0, 4),
+    ];
+    const shape = new THREE.Shape(pointsArr);
+    let geometry = new THREE.ExtrudeGeometry(shape, {
+      depth: this.width -2,
     });
-  }
-  init() {
-    this.bar.init();
-    return this;
-  }
+    const material = new THREE.MeshPhysicalMaterial({
+      color: "#666",
+      metalness: 0.5,
+      roughness: 0.5,
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.rotateY(Math.PI / 2)
+    mesh.translateZ(-this.width / 2 + 1)
+    mesh.translateX(-2)
+    mesh.translateY(-1)
+    // const group = new THREE.Group()
+    // group.add(mesh)
+    // group.rotateY(Math.PI / 2)
+    this.group.add(mesh);
+  };
 }
 
 export default Track;

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import TWEEN from "@tweenjs/tween.js";
-import { scene, camera, renderer } from "../common";
+import { scene, camera, renderer } from "../../common";
 
 interface Props {
   x: number;

@@ -25,8 +25,6 @@ interface Params {
 
 class Bar {
   meshGroup: THREE.Group;
-  geometry?: THREE.BoxGeometry;
-  material?: THREE.Material;
   group: THREE.Group;
   parentGroup: THREE.Group;
   width: number;
@@ -62,13 +60,15 @@ class Bar {
       this.meshGroup = meshGroup;
     } else {
       const geometry = new THREE.BoxGeometry(width, height, depth);
-      this.geometry = geometry;
-      const material = new THREE.MeshPhongMaterial({
+      const material = new THREE.MeshPhysicalMaterial({
         color,
+        //渲染为线条
+        wireframe: false,
+        metalness: 0.5,
+        roughness: 0.5,
       });
-      this.material = material;
-      this.meshGroup = new THREE.Group().add(new THREE.Mesh(geometry, material));
-      this.group = new THREE.Group();
+      const mesh = new THREE.Mesh(geometry, material);
+      this.meshGroup = new THREE.Group().add(mesh);
     }
   }
   init() {
@@ -87,6 +87,7 @@ class Bar {
         break;
     }
     this.group.position.set(this.x, this.y, this.z);
+
     this.group.add(this.meshGroup);
     if (this.parentGroup) {
       this.parentGroup.add(this.group);
@@ -96,15 +97,25 @@ class Bar {
   translate = (params: Params) => {
     const { type, value, time = 300 } = params;
     const target = this.group;
+    const currentY = target.position.y;
     const isHorizontal = type === "right" || type === "left";
     const translateType = isHorizontal ? "x" : "y";
+    let targetValue = value;
+    if (type === "bottom" && value < 0) {
+      targetValue = value + currentY;
+    }
     const tween = new TWEEN.Tween(target.position)
-      .to({ [translateType]: value }, time)
+      .to({ [translateType]: targetValue }, time)
       .start();
+    let isEnd = false;
+    tween.onComplete(() => {
+      isEnd = true;
+    });
+    tween.onComplete;
     const render = () => {
       tween.update();
       renderer.render(scene, camera);
-      if (target.position[translateType] !== value) {
+      if (!isEnd) {
         requestAnimationFrame(render);
       }
     };
@@ -122,10 +133,10 @@ class Bar {
     const isVertical = type === "top" || type === "bottom";
     let positionTween: any;
     if (type === "top") {
-      this.height = value;
       positionTween = new TWEEN.Tween(target.position)
         .to({ y: value / 2 }, time)
         .start();
+      this.height = value;
     }
 
     if (type === "right") {
@@ -133,7 +144,6 @@ class Bar {
         .to({ x: value / 2 }, time)
         .start();
       this.width = value;
-      console.log(1)
     }
 
     if (type === "bottom") {
@@ -162,14 +172,15 @@ class Bar {
     const tween = new TWEEN.Tween(target.scale)
       .to({ [scaleType]: value / (isHorizontal ? _width : _height) }, time)
       .start();
+    let isEnd = false;
+    tween.onComplete(() => {
+      isEnd = true;
+    });
     const render = () => {
       tween.update();
       positionTween.update();
       renderer.render(scene, camera);
-      if (
-        target.scale[scaleType] !==
-        value / (isHorizontal ? _width : _height)
-      ) {
+      if (!isEnd) {
         requestAnimationFrame(render);
       }
     };
