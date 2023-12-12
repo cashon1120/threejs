@@ -3,6 +3,7 @@ import { scene, controls, camera, renderer } from "../common";
 import createPointLight from "./lights/pointLight";
 import createCoordinate from "./tools/coordinate";
 import Track from "./model/track";
+import initEvent from "./event";
 import Rect from "./class/rect";
 
 const WIDTH = 200;
@@ -38,7 +39,7 @@ const init = () => {
     group,
     width: WIDTH,
     height: HEIGHT,
-    depth: 6,
+    barDepth: 8,
     barWidth: 4,
     color: "#f29e4b",
     // bottomBar: new Track({
@@ -50,7 +51,7 @@ const init = () => {
     //   color: "#f29e4b",
     // }),
   });
-
+  initEvent(windowRect)
   // new Track({
   //   width: WIDTH,
   //   height: 4,

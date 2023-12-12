@@ -5,9 +5,9 @@ import { scene, camera, renderer } from "../../common";
 type AlignType = "right" | "top" | "left" | "bottom" | "center";
 
 interface Props {
-  width: number;
-  height: number;
-  depth: number;
+  width: number; //模型的宽度
+  height: number; // 模型的高度
+  depth: number; // 模型的厚度
   color?: string;
   group?: THREE.Group;
   x?: number;
@@ -22,13 +22,19 @@ interface Params {
   time?: number;
 }
 
+interface transformProps extends Params {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+}
+
 class Bar {
   innerGroup: THREE.Group;
   group: THREE.Group;
   parentGroup: THREE.Group;
   width: number;
   height: number;
-  depth: number;
   align?: AlignType;
   x: number;
   y: number;
@@ -37,7 +43,7 @@ class Bar {
     const {
       width,
       height,
-      depth = 3,
+      depth,
       color = "#eee",
       x = 0,
       y = 0,
@@ -47,7 +53,6 @@ class Bar {
     } = params;
     this.width = width;
     this.height = height;
-    this.depth = depth;
     this.x = x;
     this.y = y;
     this.z = z;
@@ -88,7 +93,6 @@ class Bar {
     if (this.parentGroup) {
       this.parentGroup.add(this.group);
     }
-    return this;
   }
   translate = (params: Params) => {
     const { type, value, time = 300 } = params;
@@ -102,7 +106,6 @@ class Bar {
     tween.onComplete(() => {
       isEnd = true;
     });
-    tween.onComplete;
     const render = () => {
       tween.update();
       renderer.render(scene, camera);
@@ -112,56 +115,32 @@ class Bar {
     };
     render();
   };
-  transform = (params: Params) => {
-    const { type, value, time = 300 } = params;
+  transform = (params: transformProps) => {
+    const { type, value, left, right, top, bottom, time = 300 } = params;
     if (!type) {
-      throw new Error("请输入变化类型, 如: left | right | top | bottom");
+      throw new Error("请输入变化方向, 如: left | right | top | bottom");
     }
     const target = this.group;
     const _height = this.height;
     const _width = this.width;
     const isHorizontal = type === "right" || type === "left";
-    const isVertical = type === "top" || type === "bottom";
     let positionTween: any;
-    if (type === "top") {
+    if (type === "top" || type === "bottom") {
       positionTween = new TWEEN.Tween(target.position)
-        .to({ y: value / 2 }, time)
-        .start();
-      this.height = value;
-    }
-
-    if (type === "right") {
-      positionTween = new TWEEN.Tween(target.position)
-        .to({ x: value / 2 }, time)
-        .start();
-      this.width = value;
-    }
-
-    if (type === "bottom") {
-      const targetValue = target.position.y - (value - this.height) / 2;
-      positionTween = new TWEEN.Tween(target.position)
-        .to({ y: targetValue }, time)
-        .start();
-      this.height = value;
-    }
-
-    if (type === "left") {
-      const targetValue = target.position.x - (value - this.width) / 2;
-      positionTween = new TWEEN.Tween(target.position)
-        .to({ x: targetValue }, time)
+        .to({ y: (top + bottom ) / 2 }, time)
         .start();
     }
 
-    if (isHorizontal) {
-      this.width = value;
-    }
-    if (isVertical) {
-      this.height = value;
+    if (type === "right" || type === "left") {
+      positionTween = new TWEEN.Tween(target.position)
+        .to({ x: (right + left ) / 2 }, time)
+        .start();
     }
 
     const scaleType = isHorizontal ? "x" : "y";
+    const scaleValue = value / (isHorizontal ? _width : _height);
     const tween = new TWEEN.Tween(target.scale)
-      .to({ [scaleType]: value / (isHorizontal ? _width : _height) }, time)
+      .to({ [scaleType]: scaleValue }, time)
       .start();
     let isEnd = false;
     tween.onComplete(() => {
