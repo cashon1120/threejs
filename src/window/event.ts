@@ -26,6 +26,10 @@ const initEvent = (rect: Rect) => {
   let _tempTop = top;
   let _tempHeight = height;
   let _tempLeft = left;
+  let _maxLeft = 0;
+  let _maxTop = 0;
+  let _minLeft = 0;
+  let _minTop = 0;
   let _tempWidth = width;
   let type: "top" | "left" | "right" | "bottom" = "top";
   const begin = {
@@ -44,13 +48,17 @@ const initEvent = (rect: Rect) => {
         case "top":
           offset = begin.y - clientY;
           _tempTop = top - offset;
-          if (_tempTop < 0) {
-            _tempTop = 0;
-            return;
-          }
           _tempHeight = height + offset;
           if (_tempHeight < MIN_HEIGHT) {
             _tempHeight = MIN_HEIGHT;
+            return;
+          }
+          if (_tempHeight > MAX_HEIGHT) {
+            _tempHeight = MAX_HEIGHT;
+            _maxTop = height - MAX_HEIGHT + top;
+            if (heightValue) {
+              heightValue.innerHTML = MAX_HEIGHT + "";
+            }
             return;
           }
           if (heightValue) {
@@ -62,13 +70,7 @@ const initEvent = (rect: Rect) => {
         case "bottom":
           offset = clientY - begin.y;
           _tempHeight = height + offset;
-          if (_tempHeight < MIN_HEIGHT) {
-            _tempHeight = MIN_HEIGHT;
-            return;
-          }
-          if (top + _tempHeight > MAX_HEIGHT) {
-            return;
-          }
+          _tempWidth = Math.min(Math.max(_tempHeight, MIN_HEIGHT), MAX_HEIGHT);
           if (heightValue) {
             heightValue.innerHTML = _tempHeight + "";
           }
@@ -78,13 +80,24 @@ const initEvent = (rect: Rect) => {
         case "left":
           offset = begin.x - clientX;
           _tempLeft = left - offset;
-          if (_tempLeft < 0) {
-            _tempLeft = 0;
-            return;
-          }
           _tempWidth = width + offset;
+          _minLeft = 0;
+          _maxLeft = 0;
+          // 注意和 right 的判断方式会不一样
           if (_tempWidth < MIN_WIDTH) {
             _tempWidth = MIN_WIDTH;
+            _minLeft = width - MIN_WIDTH + left;
+            if (widthValue) {
+              widthValue.innerHTML = MIN_WIDTH + "";
+            }
+            return;
+          }
+          if (_tempWidth > MAX_WIDTH) {
+            _tempWidth = MAX_WIDTH;
+            _maxLeft = width - MAX_WIDTH + left;
+            if (widthValue) {
+              widthValue.innerHTML = MAX_WIDTH + "";
+            }
             return;
           }
           if (widthValue) {
@@ -97,13 +110,7 @@ const initEvent = (rect: Rect) => {
         case "right":
           offset = clientX - begin.x;
           _tempWidth = width + offset;
-          if (left + _tempWidth > MAX_WIDTH) {
-            return;
-          }
-          if (_tempWidth < MIN_WIDTH) {
-            _tempWidth = MIN_WIDTH;
-            return;
-          }
+          _tempWidth = Math.min(Math.max(_tempWidth, MIN_WIDTH), MAX_WIDTH);
           if (widthValue) {
             widthValue.innerHTML = _tempWidth + "";
           }
@@ -130,7 +137,9 @@ const initEvent = (rect: Rect) => {
   document?.addEventListener("mouseup", () => {
     document.removeEventListener("mousemove", onMouseMove);
     height = _tempHeight;
+    _tempTop = _maxTop || _tempTop;
     top = _tempTop;
+    _tempLeft = _maxLeft || _minLeft || _tempLeft;
     left = _tempLeft;
     width = _tempWidth;
     mousedown = false;
@@ -138,6 +147,9 @@ const initEvent = (rect: Rect) => {
       type,
       value: type === "bottom" || type === "top" ? height : width,
     });
+    // 重置最多值
+    _maxLeft = 0;
+    _maxTop = 0;
   });
 };
 

@@ -33,7 +33,6 @@ body {
   left: 50%;
   width: 500px;
   height: 200px;
-  background-color: #bcbcbc;
   transform: translateX(-50%);
 }
 
@@ -90,9 +89,13 @@ body {
 .size span {
   position: relative;
   z-index: 9;
-  display: inline-block;
-  padding: 1px 3px;
+  display: block;
+  padding: 0 5px;
+  height: 18px;
+  line-height: 18px;
+  box-sizing: border-box;
   background-color: #bcbcbc;
+  border-radius: 5px;
 }
 .size .line {
   position: absolute;
@@ -110,7 +113,7 @@ body {
   height: 20px;
 }
 .size.bottom {
-  bottom: -25px;
+  bottom: -30px;
 }
 
 .size.top::before,
@@ -147,7 +150,7 @@ body {
 .size.left {
   top: -2px;
   bottom: -2px;
-  left: -25px;
+  left: -30px;
 }
 .size.left .line {
   width: 1px;
