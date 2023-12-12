@@ -1,26 +1,41 @@
 import * as THREE from "three";
-import Bar from "../class/bar";
+import TWEEN from "@tweenjs/tween.js";
+import { scene, camera, renderer } from "../../common";
+import { getSize } from "../../utils";
+
+type AlignType = "right" | "top" | "left" | "bottom" | "center";
 
 interface Props {
-  group: THREE.Group;
   width: number;
   height: number;
-  barWidth: number; // 材质的宽度, 注意和width的区别
   depth: number;
+  color?: string;
+  group?: THREE.Group;
   x?: number;
   y?: number;
   z?: number;
-  leftBar?: Bar;
-  topBar?: Bar;
-  rightBar?: Bar;
-  bottomBar?: Bar;
-  color?: string;
+  meshs?: THREE.Mesh[]
+  align?: AlignType;
 }
 
-class Track extends Bar {
-  bar: Bar;
+interface Params {
+  type: "right" | "top" | "left" | "bottom";
+  value: number;
+  time?: number;
+}
+
+class Bar {
+  innerGroup: THREE.Group;
+  group: THREE.Group;
+  parentGroup: THREE.Group;
+  width: number;
+  height: number;
+  depth: number;
+  align?: AlignType;
+  x: number;
+  y: number;
+  z: number;
   constructor(params: Props) {
-    super(params);
     const {
       width,
       height,
@@ -29,72 +44,161 @@ class Track extends Bar {
       x = 0,
       y = 0,
       z = 0,
+      meshs,
+      group,
+      align = "center",
     } = params;
-    this.group = new THREE.Group();
     this.width = width;
-    const geometry = new THREE.BoxGeometry(width, height, depth);
-    const material = new THREE.MeshPhysicalMaterial({
-      color,
-      //渲染为线条
-      wireframe: false,
-      metalness: 0.5,
-      roughness: 0.5,
-    });
-    const mesh = new THREE.Mesh(geometry, material)
-
-    // const geometry2 = new THREE.BoxGeometry(width - 1, height, depth - 2);
-    // const material2 = new THREE.MeshPhysicalMaterial({
-    //   color: "#ffe500",
-    //   metalness: 0.5,
-    //   roughness: 0.5,
-    // });
-    // const mesh2 = new THREE.Mesh(geometry2, material2);
-    // mesh2.position.set(0, 1, 0);
-    this.group.add(mesh);
-    // this.group.add(mesh2);
-    // this.createTrack();
-    this.group.position.set(x, y, z);
-    this.bar = new Bar({
-      width,
-      height,
-      depth,
-      meshGroup: this.group,
-      align: "bottom",
-    }).init();
-
+    this.height = height;
+    this.depth = depth;
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.align = align;
+    this.parentGroup = group || new THREE.Group();
+    this.group = new THREE.Group();
+    // this.init(meshs, color)
   }
+  init(meshs?: THREE.Mesh[], color?: string) {
+    if (meshs) {
+      meshs.forEach(mesh => {
+        this.group.add(mesh)
+      })
+    } else {
+      const geometry = new THREE.BoxGeometry(this.width, this.height, this.depth);
+      const material = new THREE.MeshPhysicalMaterial({
+        color,
+        //渲染为线条
+        wireframe: false,
+        metalness: 0.5,
+        roughness: 0.5,
+      });
+      const mesh = new THREE.Mesh(geometry, material);
+      this.group.add(mesh);
+    }
 
+    this.group.position.set(this.x, this.y, this.z);
 
-  private createTrack = () => {
-    const pointsArr = [
-      new THREE.Vector2(0, 0),
-      new THREE.Vector2(4, 0),
-      new THREE.Vector2(4, 4),
-      new THREE.Vector2(3, 4),
-      new THREE.Vector2(3, 3),
-      new THREE.Vector2(1, 3),
-      new THREE.Vector2(1, 4),
-      new THREE.Vector2(0, 4),
-    ];
-    const shape = new THREE.Shape(pointsArr);
-    let geometry = new THREE.ExtrudeGeometry(shape, {
-      depth: this.width -2,
+    switch (this.align) {
+      case "top":
+        this.group.translateY(-this.height / 2);
+        break;
+      case "right":
+        this.group.translateX(-this.width / 2);
+        break;
+      case "bottom":
+        console.log(123123)
+        this.group.children.forEach((mesh: any) => {
+          console.log(mesh)
+          const size = getSize(mesh);
+          console.log(size)
+          // mesh.translateY(size.y / 2);
+          mesh.scale.set(1, 2, 1)
+        })
+        break;
+      case "left":
+        this.group.translateX(this.width / 2);
+        break;
+    }
+    if (this.parentGroup) {
+      this.parentGroup.add(this.group);
+    }
+    return this;
+  }
+  translate = (params: Params) => {
+    const { type, value, time = 300 } = params;
+    const target = this.group;
+    const currentY = target.position.y;
+    const isHorizontal = type === "right" || type === "left";
+    const translateType = isHorizontal ? "x" : "y";
+    let targetValue = value;
+    // if (type === "bottom" && value < 0) {
+    //   targetValue = value + currentY;
+    // }
+    console.log(target.position);
+    console.log(value);
+    const tween = new TWEEN.Tween(target.position)
+      .to({ [translateType]: targetValue }, time)
+      .start();
+    let isEnd = false;
+    tween.onComplete(() => {
+      isEnd = true;
     });
-    const material = new THREE.MeshPhysicalMaterial({
-      color: "#666",
-      metalness: 0.5,
-      roughness: 0.5,
+    tween.onComplete;
+    const render = () => {
+      tween.update();
+      renderer.render(scene, camera);
+      if (!isEnd) {
+        requestAnimationFrame(render);
+      }
+    };
+    render();
+  };
+  transform = (params: Params) => {
+    const { type, value, time = 300 } = params;
+    if (!type) {
+      throw new Error("请输入变化类型, 如: left | right | top | bottom");
+    }
+    const target = this.group;
+    const _height = this.height;
+    const _width = this.width;
+    const isHorizontal = type === "right" || type === "left";
+    const isVertical = type === "top" || type === "bottom";
+    let positionTween: any;
+    if (type === "top") {
+      positionTween = new TWEEN.Tween(target.position)
+        .to({ y: value / 2 }, time)
+        .start();
+      this.height = value;
+    }
+
+    if (type === "right") {
+      positionTween = new TWEEN.Tween(target.position)
+        .to({ x: value / 2 }, time)
+        .start();
+      this.width = value;
+    }
+
+    if (type === "bottom") {
+      const targetValue = target.position.y - (value - this.height) / 2;
+      positionTween = new TWEEN.Tween(target.position)
+        .to({ y: targetValue }, time)
+        .start();
+      this.height = value;
+    }
+
+    if (type === "left") {
+      const targetValue = target.position.x - (value - this.width) / 2;
+      positionTween = new TWEEN.Tween(target.position)
+        .to({ x: targetValue }, time)
+        .start();
+    }
+
+    if (isHorizontal) {
+      this.width = value;
+    }
+    if (isVertical) {
+      this.height = value;
+    }
+
+    const scaleType = isHorizontal ? "x" : "y";
+    const tween = new TWEEN.Tween(target.scale)
+      .to({ [scaleType]: value / (isHorizontal ? _width : _height) }, time)
+      .start();
+    let isEnd = false;
+    tween.onComplete(() => {
+      isEnd = true;
     });
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.rotateY(Math.PI / 2)
-    mesh.translateZ(-this.width / 2 + 1)
-    mesh.translateX(-2)
-    mesh.translateY(-1)
-    // const group = new THREE.Group()
-    // group.add(mesh)
-    // group.rotateY(Math.PI / 2)
-    this.group.add(mesh);
+    const render = () => {
+      tween.update();
+      positionTween.update();
+      renderer.render(scene, camera);
+      if (!isEnd) {
+        requestAnimationFrame(render);
+      }
+    };
+    render();
   };
 }
 
-export default Track;
+export default Bar;

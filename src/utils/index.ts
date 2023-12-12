@@ -36,3 +36,10 @@ export const drawRect = (width: number, height: number): THREE.Shape => {
   const shape = new THREE.Shape(pointsArr);
   return shape;
 };
+
+// 获取大小
+export const getSize = (mesh: THREE.Mesh) => {
+  const box = new THREE.Box3();
+  box.expandByObject(mesh);
+  return box.getSize(new THREE.Vector3());
+};

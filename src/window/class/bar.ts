@@ -13,7 +13,6 @@ interface Props {
   x?: number;
   y?: number;
   z?: number;
-  meshGroup?: THREE.Group;
   align?: AlignType;
 }
 
@@ -24,7 +23,7 @@ interface Params {
 }
 
 class Bar {
-  meshGroup: THREE.Group;
+  innerGroup: THREE.Group;
   group: THREE.Group;
   parentGroup: THREE.Group;
   width: number;
@@ -43,7 +42,6 @@ class Bar {
       x = 0,
       y = 0,
       z = 0,
-      meshGroup,
       group,
       align = "center",
     } = params;
@@ -56,39 +54,37 @@ class Bar {
     this.align = align;
     this.parentGroup = group || new THREE.Group();
     this.group = new THREE.Group();
-    if (meshGroup) {
-      this.meshGroup = meshGroup;
-    } else {
-      const geometry = new THREE.BoxGeometry(width, height, depth);
-      const material = new THREE.MeshPhysicalMaterial({
-        color,
-        //渲染为线条
-        wireframe: false,
-        metalness: 0.5,
-        roughness: 0.5,
-      });
-      const mesh = new THREE.Mesh(geometry, material);
-      this.meshGroup = new THREE.Group().add(mesh);
-    }
+    this.innerGroup = new THREE.Group();
+
+    const geometry = new THREE.BoxGeometry(width, height, depth);
+    const material = new THREE.MeshPhysicalMaterial({
+      color,
+      //渲染为线条
+      wireframe: false,
+      metalness: 0.5,
+      roughness: 0.5,
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    this.innerGroup.add(mesh);
+    this.init();
   }
   init() {
     switch (this.align) {
       case "top":
-        this.meshGroup.translateY(-this.height / 2);
+        this.innerGroup.translateY(-this.height / 2);
         break;
       case "right":
-        this.meshGroup.translateX(-this.width / 2);
+        this.innerGroup.translateX(-this.width / 2);
         break;
       case "bottom":
-        this.meshGroup.translateY(this.height / 2);
+        this.innerGroup.translateY(this.height / 2);
         break;
       case "left":
-        this.meshGroup.translateX(this.width / 2);
+        this.innerGroup.translateX(this.width / 2);
         break;
     }
     this.group.position.set(this.x, this.y, this.z);
-
-    this.group.add(this.meshGroup);
+    this.group.add(this.innerGroup);
     if (this.parentGroup) {
       this.parentGroup.add(this.group);
     }
@@ -97,15 +93,10 @@ class Bar {
   translate = (params: Params) => {
     const { type, value, time = 300 } = params;
     const target = this.group;
-    const currentY = target.position.y;
     const isHorizontal = type === "right" || type === "left";
     const translateType = isHorizontal ? "x" : "y";
-    let targetValue = value;
-    if (type === "bottom" && value < 0) {
-      targetValue = value + currentY;
-    }
     const tween = new TWEEN.Tween(target.position)
-      .to({ [translateType]: targetValue }, time)
+      .to({ [translateType]: value }, time)
       .start();
     let isEnd = false;
     tween.onComplete(() => {

@@ -41,15 +41,14 @@ const init = () => {
     depth: 6,
     barWidth: 4,
     color: "#f29e4b",
-    bottomBar: new Track({
-      width: WIDTH,
-      height: 4,
-      depth: 6,
-      group,
-      barWidth: 4,
-      x: WIDTH / 2,
-      color: "#f29e4b",
-    }),
+    // bottomBar: new Track({
+    //   width: WIDTH,
+    //   height: 4,
+    //   depth: 6,
+    //   group,
+    //   x: WIDTH / 2,
+    //   color: "#f29e4b",
+    // }),
   });
 
   // new Track({
@@ -108,12 +107,27 @@ const init = () => {
   controls.target.copy(new THREE.Vector3(WIDTH / 2, HEIGHT / 2, 0));
   controls.update();
 
-  renderer.render(scene, camera);
+
+
+  // 测试
+  // const group1 = new THREE.Group();
+  // const geometry = new THREE.BoxGeometry(20, 20, 20)
+  // const material = new THREE.MeshLambertMaterial({
+  //   color: '#f29e4b',
+  // })
+  // const mesh = new THREE.Mesh(geometry, material)
+  // group1.add(mesh)
+  // group.add(group1)
+  // scene.add(group)
+  // console.log(group.position)
+  // group.position.set(50, 50, 50)
+  // mesh.position.set(10, 10, 10)
+  // renderer.render(scene, camera);
 
   const button = document.getElementById('submitButton')
   const option = document.getElementById('option')
   const inputValue = document.getElementById('inputValue')
-  let type: 'left' | 'right' | 'bottom' | 'top' = 'left'
+  let type: 'left' | 'right' | 'bottom' | 'top' = 'bottom'
   let value = 0
   option?.addEventListener('change', (e: any) => {
     type = e.target.value

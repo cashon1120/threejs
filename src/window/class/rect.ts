@@ -15,6 +15,8 @@ interface Props {
   rightBar?: Bar;
   bottomBar?: Bar;
   color?: string;
+  minWidth?: number;
+  minHeight?: number;
 }
 
 interface TranformProps {
@@ -40,6 +42,8 @@ class Rect {
   left: number;
   right: number;
   bottom: number;
+  minWidth: number;
+  minHeight: number;
   constructor(params: Props) {
     const {
       width,
@@ -55,6 +59,8 @@ class Rect {
       rightBar,
       bottomBar,
       color = "#eeeeee",
+      minWidth = 100,
+      minHeight = 50,
     } = params;
     this.width = width;
     this.height = height;
@@ -64,6 +70,8 @@ class Rect {
     this.right = width;
     this.bottom = 0;
     this.barWidth = barWidth;
+    this.minWidth = minWidth;
+    this.minHeight = minHeight;
     this.topBar =
       topBar ||
       new Bar({
@@ -74,7 +82,7 @@ class Rect {
         align: "top",
         depth,
         color,
-      }).init();
+      });
     this.rightBar =
       rightBar ||
       new Bar({
@@ -85,7 +93,7 @@ class Rect {
         align: "right",
         depth,
         color,
-      }).init();
+      });
     this.leftBar =
       leftBar ||
       new Bar({
@@ -95,7 +103,7 @@ class Rect {
         depth,
         color,
         align: "left",
-      }).init();
+      });
     this.bottomBar =
       bottomBar ||
       new Bar({
@@ -105,8 +113,7 @@ class Rect {
         align: "bottom",
         depth,
         color,
-      }).init();
-
+      });
     this.group = new THREE.Group();
     this.group.position.set(x, y, z);
     this.group.add(this.topBar.group);
@@ -117,15 +124,22 @@ class Rect {
   }
   transform = (params: TranformProps) => {
     const { type, value, time = 300 } = params;
-
+    if (typeof value !== "number" || !value) {
+      throw new Error(`请输入数字`);
+    }
     switch (type) {
       case "top":
         if (this.height === value) {
           return;
         }
+        if (value < this.minHeight) {
+          throw new Error(`高度不能小于最小高度(${this.minHeight})`);
+        }
+        this.top  = value - this.height + this.top
+        console.log(this.top)
         this.topBar.translate({
           type,
-          value: value + this.bottom,
+          value: this.top,
           time,
         });
         this.leftBar.transform({
@@ -139,16 +153,18 @@ class Rect {
           time,
         });
         this.height = value;
-        this.top = this.height + this.bottom;
         break;
       case "right":
         if (this.width === value) {
           return;
         }
-        this.width = value;
+        if (value < this.minWidth) {
+          throw new Error(`宽度不能小于最小宽度(${this.minHeight})`);
+        }
+        this.right = value - this.width + this.right
         this.topBar.transform({
           type,
-          value,
+          value: this.right,
           time,
         });
         this.bottomBar.transform({
@@ -167,9 +183,13 @@ class Rect {
         if (this.height === value) {
           return;
         }
+        if (value < this.minHeight) {
+          throw new Error(`高度不能小于最小高度(${this.minHeight})`);
+        }
+        this.bottom = this.top - value;
         this.bottomBar.translate({
           type,
-          value: this.height - value,
+          value: this.bottom,
           time,
         });
         this.leftBar.transform({
@@ -183,7 +203,6 @@ class Rect {
           value,
           time,
         });
-        this.bottom = this.height - value;
         this.height = value;
         break;
 
@@ -191,9 +210,14 @@ class Rect {
         if (this.width === value) {
           return;
         }
+        if (value < this.minWidth) {
+          throw new Error(`宽度不能小于最小宽度(${this.minWidth})`);
+        }
+        console.log(this.right)
+        this.left = this.right - value;
         this.leftBar.translate({
           type,
-          value: this.width - value,
+          value: this.left,
           time,
         });
         this.topBar.transform({
