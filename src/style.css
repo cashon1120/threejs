@@ -25,6 +25,13 @@ body {
   margin: 0;
   background: linear-gradient(#cccccc, #fafafa, #cccccc);
   place-items: center;
+  cursor: default;
+}
+body.row{
+  cursor: row-resize;
+}
+body.col{
+  cursor: col-resize;
 }
 
 .outer {
@@ -51,7 +58,7 @@ body {
   width: 6px;
   height: 6px;
   background-color: #333;
-  cursor: move;
+  cursor: row-resize;
 }
 .drag.top {
   top: -4px;
@@ -71,12 +78,14 @@ body {
   height: 15px;
   transform: translateY(-50%);
   line-height-step: 10px;
+  cursor: col-resize;
 }
 .drag.right {
   top: 50%;
   right: -4px;
   height: 15px;
   transform: translateY(-50%);
+  cursor: col-resize;
 }
 .size {
   position: absolute;
